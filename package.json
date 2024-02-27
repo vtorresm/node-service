@@ -1,0 +1,22 @@
+{
+  "name": "operations-service",
+  "version": "1.0.0",
+  "description": "Operations Service for the Quality environment",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "services",
+    "QA",
+    "nodejs",
+    "node-windows"
+  ],
+  "author": "Victor Torres",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "node-windows": "^1.0.0-beta.8"
+  }
+}
