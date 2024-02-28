@@ -1,6 +1,6 @@
 import fs from 'fs';
 
-import { getDateTimeString } from './utils';
+import { getDateTimeString } from './getDateTimeString.js';
 
 // Función para registrar un mensaje en un archivo .log
 export function logToFile(message) {

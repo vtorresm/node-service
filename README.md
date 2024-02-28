@@ -6,7 +6,13 @@ Servicio para el monitoreo de Operaciones
 
 ## Installation
 
-Install Servicio con NodeJS
+Instalar dependencias Servicio
+
+```bash
+  npm install
+```
+
+Instalar Servicio con NodeJS
 
 ```bash
   node app.js install
