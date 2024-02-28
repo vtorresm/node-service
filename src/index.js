@@ -1,4 +1,3 @@
-// service.js
 import { Service } from 'node-windows';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
@@ -6,6 +5,9 @@ import os from 'os';
 import fs from 'fs';
 import { spawn } from 'child_process';
 import dotenv from 'dotenv';
+
+import checkStatus from './common/checkStatus.js';
+import { logToFile } from './common/logFile.js';
 
 dotenv.config();
 
@@ -24,53 +26,39 @@ const svc = new Service({
   script: join(__dirname, 'app.js'), // Ruta al archivo principal de tu aplicación
 });
 
-// Función para obtener la fecha y hora actual como una cadena en el formato YYYY-MM-DD HH:MM:SS
-function getDateTimeString() {
-  const date = new Date();
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
-    2,
-    '0'
-  )}-${String(date.getDate()).padStart(2, '0')} ${String(
-    date.getHours()
-  ).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(
-    date.getSeconds()
-  ).padStart(2, '0')}`;
-}
-
-// Función para registrar un mensaje en un archivo .log
-function logToFile(message) {
-  const dateTimeString = getDateTimeString();
-  const logFileName = `C:\\logs\\error-${dateTimeString.slice(0, 10)}.log`;
-  fs.appendFileSync(logFileName, `${dateTimeString} - ${message}\n`);
-}
-
 // Método para ejecutar el archivo .bat
-function executeBatFile() {
+async function executeBatFile() {
   // Verificar si el archivo .bat existe
   if (!fs.existsSync(batFilePath)) {
     logToFile(`El archivo ${batFilePath} no existe.`);
     return;
   }
 
-  // Aquí puedes agregar cualquier lógica adicional que necesites, como la duración de la ejecución, etc.
-  const bat = spawn(batFilePath);
+  // Verificar el estado de la URL
+  const status = await checkStatus(); // Usa la función importada checkStatus
+  if (status !== 200) {
+    // Si el estado es diferente de 200, ejecuta el archivo .bat cada 10 minutos
+    setInterval(() => {
+      const bat = spawn(batFilePath);
 
-  // Manejar eventos de salida y error
-  bat.stdout.on('data', (data) => {
-    console.log(data.toString());
-  });
+      // Manejar eventos de salida y error
+      bat.stdout.on('data', (data) => {
+        console.log(data.toString());
+      });
 
-  bat.stderr.on('data', (data) => {
-    logToFile(data.toString());
-  });
+      bat.stderr.on('data', (data) => {
+        logToFile(data.toString());
+      });
 
-  bat.on('exit', (code) => {
-    const errorMessage = `Proceso de archivo Operations.bat finalizado con código ${code}`;
-    logToFile(errorMessage);
-    console.log(
-      `Proceso de archivo Operations.bat finalizado con código ${code}`
-      );
-  });
+      bat.on('exit', (code) => {
+        const errorMessage = `Proceso de archivo Operations.bat finalizado con código ${code}`;
+        logToFile(errorMessage);
+        console.log(
+          `Proceso de archivo Operations.bat finalizado con código ${code}`
+          );
+      });
+      }, 10 * 60 * 1000); // 10 minutos en milisegundos
+  }
 }
 
 // Configurar el servicio
