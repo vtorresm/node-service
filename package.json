@@ -1,5 +1,5 @@
 {
-  "name": "operations-service",
+  "name": "node-service",
   "version": "1.0.0",
   "description": "Operations Service for the Quality environment",
   "main": "index.js",

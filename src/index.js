@@ -21,9 +21,9 @@ const __dirname = dirname(__filename);
 
 // Configuración del servicio
 const svc = new Service({
-  name: 'ResetOperations',
+  name: 'ServiceMessage',
   description:
-    'Servicio ResetOperations creado con node-windows para monitorear el bachero Operations.bat',
+    'Servicio ServiceMessage creado con node-windows para monitorear el bachero servicio.bat',
   script: join(__dirname, 'app.js'), // Ruta al archivo principal de tu aplicación
 });
 
@@ -52,14 +52,14 @@ async function executeBatFile() {
       });
 
       bat.on('exit', (code) => {
-        const errorMessage = `Proceso de archivo Operations.bat finalizado con código ${code}`;
+        const errorMessage = `Proceso de archivo service.bat finalizado con código ${code}`;
         logToFile(errorMessage);
         console.log(
-          `Proceso de archivo Operations.bat finalizado con código ${code}`
+          `Proceso de archivo servicio.bat finalizado con código ${code}`
           );
       });
-      //}, 0.5 * 60 * 1000); // 1 minuto en milisegundos
-    }, 10 * 60 * 1000); // 10 minutos en milisegundos
+    }, 0.5 * 60 * 1000); // 1 minuto en milisegundos
+    // }, 10 * 60 * 1000); // 10 minutos en milisegundos
   }
 }
 
