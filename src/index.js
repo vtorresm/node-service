@@ -49,12 +49,12 @@ async function executeBatFile() {
       });
 
       bat.stderr.on('data', (data) => {
-        logToFile(chalk.red(data.toString())); // Colorear mensaje de error en rojo
+        logToFile(data.toString()); // Colorear mensaje de error en rojo
       });
 
       bat.on('exit', (code) => {
         const errorMessage = `Proceso de archivo service.bat finalizado con código ${code}`;
-        logToFile(chalk.yellow(errorMessage)); // Colorear mensaje de advertencia en amarillo
+        logToFile(errorMessage); // Colorear mensaje de advertencia en amarillo
         console.log(chalk.yellow(errorMessage)); // Colorear mensaje de advertencia en amarillo
       });
     }, 0.5 * 60 * 1000 * 1000);
@@ -64,7 +64,7 @@ async function executeBatFile() {
 svc.on('install', function (error) {
   if (error) {
     console.log(chalk.red('Error al instalar el servicio:', error));
-    logToFile(chalk.red('Error al instalar el servicio:', error)); // Colorear mensaje de error en rojo
+    logToFile('Error al instalar el servicio:', error); // Colorear mensaje de error en rojo
     return;
   }
 
@@ -85,7 +85,7 @@ svc.on('install', function (error) {
     const errorMessage = `El usuario local (${localUser}) o el dominio (${os.hostname()}) no coinciden con las variables de entorno (${
       process.env.ACCOUNT
     }, ${process.env.DOMAIN}).`;
-    logToFile(chalk.red(errorMessage)); // Colorear mensaje de error en rojo
+    logToFile(errorMessage); // Colorear mensaje de error en rojo
     console.log(chalk.red(errorMessage)); // Colorear mensaje de error en rojo
   }
 });
@@ -102,13 +102,13 @@ svc.on('uninstall', function (error) {
 if (process.argv[2] === 'install') {
   svc.install();
   console.log(chalk.green('Service installed.')); // Colorear mensaje de éxito en verde
-  logToFile(chalk.green('Service installed.')); // Colorear mensaje de éxito en verde
+  logToFile('Service installed.'); // Colorear mensaje de éxito en verde
 } else if (process.argv[2] === 'uninstall') {
   svc.uninstall();
   console.log(chalk.green('Service uninstalled.')); // Colorear mensaje de éxito en verde
-  logToFile(chalk.green('Service uninstalled.')); // Colorear mensaje de éxito en verde
+  logToFile('Service uninstalled.'); // Colorear mensaje de éxito en verde
 } else {
   const errorMessage = `Error: Argumento no válido. Uso correcto: - Para instalar: node app.js install - Para desinstalar: node app.js uninstall`;
   console.log(chalk.red(errorMessage)); // Colorear mensaje de error en rojo
-  logToFile(chalk.red(errorMessage)); // Colorear mensaje de error en rojo
+  logToFile(errorMessage); // Colorear mensaje de error en rojo
 }
