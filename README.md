@@ -38,6 +38,8 @@ To run this project, you will need to add the following environment variables to
 
 `URL=https://xxxxxxxxxxx.com`
 
+`BATFILEPATH=C:\\git\\name_service.bat`
+
 
 ## Authors
 
