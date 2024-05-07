@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import { request as _request } from 'https';
-import { pipeline, Writable } from 'stream'; // Import the pipeline function and Writable class from the stream module
+import { pipeline, Writable } from 'stream';
 
 import { logToFile } from './logToFile.js';
 
@@ -9,45 +9,56 @@ dotenv.config();
 const url = process.env.URL;
 
 async function checkStatus() {
+  try {
+    const response = await makeRequest(url); // Make the request and get the response
+    const statusCode = response.statusCode;
+    logToFile(`Código de estado: ${statusCode}`);
+    console.log(`Código de estado: ${statusCode}`);
+
+    if (statusCode === 200) {
+      const body = await getResponseBody(response); // Get the response body
+      console.log(`Cuerpo de la respuesta: ${body}`);
+    }
+
+    return statusCode;
+  } catch (error) {
+    console.error('Ocurrió un error:', error);
+    throw error;
+  }
+}
+
+function makeRequest(url) {
   return new Promise((resolve, reject) => {
-    const request = _request(url, async (response) => {
-      const statusCode = response.statusCode;
-      logToFile(`Código de estado: ${statusCode}`);
-      console.log(`Código de estado: ${statusCode}`);
-
-      if (statusCode === 200) {
-        let body = '';
-        // Create a writable stream to receive the data from the response stream
-        const writableStream = new Writable({
-          write(chunk, encoding, callback) {
-            body += chunk.toString();
-            callback();
-          },
-        });
-
-        // Use the pipeline function to pipe the response stream to the writable stream
-        pipeline(response, writableStream, (err) => {
-          if (err) {
-            console.error(
-              'Ocurrió un error al leer el cuerpo de la respuesta:',
-              err
-            );
-            reject(err);
-          } else {
-            console.log(`Cuerpo de la respuesta: ${body}`);
-          }
-        });
-      }
-
-      resolve(statusCode);
+    const request = _request(url, (response) => {
+      resolve(response);
     });
 
-    request.on('error', (err) => {
-      console.error('Ocurrió un error al intentar acceder a la URL:', err);
-      reject(err);
+    request.on('error', (error) => {
+      reject(error);
     });
 
     request.end();
+  });
+}
+
+function getResponseBody(response) {
+  return new Promise((resolve, reject) => {
+    let body = '';
+
+    const writableStream = new Writable({
+      write(chunk, encoding, callback) {
+        body += chunk.toString();
+        callback();
+      },
+    });
+
+    pipeline(response, writableStream, (error) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(body);
+      }
+    });
   });
 }
 
